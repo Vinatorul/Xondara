@@ -1,6 +1,8 @@
 [package]
-name = "Xondara"
+name = "xondara"
 version = "0.1.0"
 authors = ["alexander"]
 
 [dependencies]
+glium = "*"
+image = "*"
