@@ -5,51 +5,19 @@ extern crate gfx_window_glutin;
 extern crate gfx_device_gl;
 extern crate glutin;
 
-use gfx::traits::FactoryExt;
 use gfx::Device;
 
-pub type ColorFormat = gfx::format::Rgba8;
-pub type DepthFormat = gfx::format::DepthStencil;
-
-gfx_defines! {
-    vertex Vertex {
-        pos: [f32; 2] = "a_Pos",
-        color: [f32; 3] = "a_Color",
-    }
-
-    pipeline pipe {
-        vbuf: gfx::VertexBuffer<Vertex> = (),
-        out: gfx::RenderTarget<ColorFormat> = "Target0",
-    }
-}
-
-const TRIANGLE: [Vertex; 3] = [
-    Vertex { pos: [ -0.5, -0.5 ], color: [1.0, 0.0, 0.0] },
-    Vertex { pos: [  0.5, -0.5 ], color: [0.0, 1.0, 0.0] },
-    Vertex { pos: [  0.0,  0.5 ], color: [0.0, 0.0, 1.0] }
-];
-
-const CLEAR_COLOR: [f32; 4] = [0.1, 0.2, 0.3, 1.0];
+mod visualizer;
 
 fn main() {
     let builder = glutin::WindowBuilder::new()
         .with_title("Triangle example".to_string())
         .with_dimensions(1024, 768)
         .with_vsync();
-    let (window, mut device, mut factory, main_color, _main_depth) =
-        gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder);
+    let (window, mut device, mut factory, main_color, main_depth) =
+        gfx_window_glutin::init::<visualizer::ColorFormat, visualizer::DepthFormat>(builder);
     let mut encoder: gfx::Encoder<_, _> = factory.create_command_buffer().into();
-    let pso = factory.create_pipeline_simple(
-        include_bytes!("shader/triangle_150.glslv"),
-        include_bytes!("shader/triangle_150.glslf"),
-        pipe::new()
-    ).unwrap();
-    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&TRIANGLE, ());
-    let data = pipe::Data {
-        vbuf: vertex_buffer,
-        out: main_color
-    };
-
+    let mut visualizer = visualizer::Visualizer::new(factory, main_color, main_depth);
     'main: loop {
         // loop over events
         for event in window.poll_events() {
@@ -60,8 +28,7 @@ fn main() {
             }
         }
         // draw a frame
-        encoder.clear(&data.out, CLEAR_COLOR);
-        encoder.draw(&slice, &pso, &data);
+        visualizer.render(&mut encoder);
         encoder.flush(&mut device);
         window.swap_buffers().unwrap();
         device.cleanup();
