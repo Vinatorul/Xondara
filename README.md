@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Vinatorul/Xondara.svg?branch=master)](https://travis-ci.org/Vinatorul/Xondara)
 [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Vinatorul/Xondara/blob/master/LICENSE)
 
-2D glium game proto
+2D gfx game proto
 
 # Requirements
 

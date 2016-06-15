@@ -1,8 +1,11 @@
 [package]
 name = "xondara"
 version = "0.1.0"
-authors = ["alexander"]
+authors = ["Alexander Kuvaev <alexander@kuvaev.me>"]
 
 [dependencies]
-glium = "*"
-image = "*"
+glutin = "^0.5"
+gfx_core = "*"
+gfx_device_gl = "*"
+gfx_window_glutin = "*"
+gfx = "*"
