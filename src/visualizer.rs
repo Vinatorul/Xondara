@@ -35,11 +35,13 @@ pub struct Visualizer<R, F> where R: gfx::Resources, F: gfx::Factory<R> {
 impl<R, F> Visualizer<R, F> where R: gfx::Resources, F: gfx::Factory<R> {
     pub fn new(mut factory: F, 
                main_color: gfx::handle::RenderTargetView<R, ColorFormat>,
-               _main_depth: gfx::handle::DepthStencilView<R, DepthFormat>) 
+               _main_depth: gfx::handle::DepthStencilView<R, DepthFormat>,
+               verex_shader: &'static [u8],
+               fragment_shader: &'static [u8]) 
             -> Visualizer<R, F> {
         let pso = factory.create_pipeline_simple(
-            include_bytes!("shader/triangle_150.glslv"),
-            include_bytes!("shader/triangle_150.glslf"),
+            verex_shader,
+            fragment_shader,
             pipe::new()
         ).unwrap();
         let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&TRIANGLE, ());

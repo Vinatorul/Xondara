@@ -17,7 +17,12 @@ fn main() {
     let (window, mut device, mut factory, main_color, main_depth) =
         gfx_window_glutin::init::<visualizer::ColorFormat, visualizer::DepthFormat>(builder);
     let mut encoder: gfx::Encoder<_, _> = factory.create_command_buffer().into();
-    let mut visualizer = visualizer::Visualizer::new(factory, main_color, main_depth);
+    let mut visualizer = visualizer::Visualizer::new(
+        factory, 
+        main_color, 
+        main_depth,
+        include_bytes!("shader/triangle_150.glslv"),
+        include_bytes!("shader/triangle_150.glslf"));
     'main: loop {
         // loop over events
         for event in window.poll_events() {
