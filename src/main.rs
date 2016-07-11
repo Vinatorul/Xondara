@@ -4,14 +4,16 @@ extern crate gfx;
 extern crate gfx_window_glutin;
 extern crate gfx_device_gl;
 extern crate glutin;
+extern crate image;
 
 use gfx::Device;
 
 mod visualizer;
 
 fn main() {
+    std::env::set_var("RUST_BACKTRACE", "1");
     let builder = glutin::WindowBuilder::new()
-        .with_title("Triangle example".to_string())
+        .with_title("Xondara".to_string())
         .with_dimensions(1024, 768)
         .with_vsync();
     let (window, mut device, mut factory, main_color, main_depth) =

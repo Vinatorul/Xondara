@@ -1,7 +1,10 @@
 #version 120
 
-varying vec4 v_Color;
+
+uniform sampler2D t_Test;
+varying vec2 v_Tc;
 
 void main() {
-    gl_FragColor = v_Color;
+    gl_FragColor = texture2D(t_Test, v_Tc);
+
 }
