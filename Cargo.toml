@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Alexander Kuvaev <alexander@kuvaev.me>"]
 
 [dependencies]
-glutin = "^0.5"
+glutin = "*"
 gfx_core = "*"
 gfx_device_gl = "*"
 gfx_window_glutin = "*"

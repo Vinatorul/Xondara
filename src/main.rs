@@ -21,8 +21,8 @@ fn main() {
         factory, 
         main_color, 
         main_depth,
-        include_bytes!("shader/triangle_150.glslv"),
-        include_bytes!("shader/triangle_150.glslf"));
+        include_bytes!("shader/120_vert.glsl"),
+        include_bytes!("shader/120_frag.glsl"));
     'main: loop {
         // loop over events
         for event in window.poll_events() {
