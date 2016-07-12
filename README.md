@@ -1,8 +1,8 @@
 # Xondara
 
 [![Build Status](https://travis-ci.org/Vinatorul/Xondara.svg?branch=master)](https://travis-ci.org/Vinatorul/Xondara)
-[![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Vinatorul/Xondara/blob/master/LICENSE)
 [![Dependency Status](https://dependencyci.com/github/Vinatorul/Xondara/badge)](https://dependencyci.com/github/Vinatorul/Xondara)
+[![license](https://img.shields.io/badge/licence-MIT%2FApache--2.0-blue.svg)](https://github.com/Vinatorul/Xondara)
 
 2D gfx game proto
 
@@ -29,4 +29,10 @@ To run game type
 > cargo run --release
 
 ## License
-`Xondara` is licensed under the MIT license. Please read the [LICENSE](https://github.com/Vinatorul/Xondara/blob/master/LICENSE) file in this repository for more information.
+
+`Xondara` is licensed under either of
+ 
+ * Apache License, Version 2.0 ([LICENSE-APACHE](https://github.com/Vinatorul/Xondara/blob/master/LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](https://github.com/Vinatorul/Xondara/blob/master/LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
