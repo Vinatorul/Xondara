@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Vinatorul/Xondara.svg?branch=master)](https://travis-ci.org/Vinatorul/Xondara)
 [![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Vinatorul/Xondara/blob/master/LICENSE)
+[![Dependency Status](https://dependencyci.com/github/Vinatorul/Xondara/badge)](https://dependencyci.com/github/Vinatorul/Xondara)
 
 2D gfx game proto
 
