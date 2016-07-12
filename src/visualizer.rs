@@ -5,7 +5,7 @@ use gfx::handle::ShaderResourceView;
 use gfx::tex;
 use image;
 
-pub type ColorFormat = gfx::format::Rgba8;
+pub type ColorFormat = gfx::format::Srgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
 
 

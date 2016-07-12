@@ -9,4 +9,8 @@ gfx_core = "*"
 gfx_device_gl = "*"
 gfx_window_glutin = "*"
 gfx = "*"
-image = "*"
+
+[dependencies.image]
+version = "*"
+default-features = false
+features = ["png_codec"]
