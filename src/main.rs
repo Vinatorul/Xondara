@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate gfx;
-
 extern crate gfx_window_glutin;
 extern crate gfx_device_gl;
 extern crate glutin;
@@ -24,7 +23,9 @@ fn main() {
         main_color, 
         main_depth,
         include_bytes!("shader/120_vert.glsl"),
-        include_bytes!("shader/120_frag.glsl"));
+        include_bytes!("shader/120_frag.glsl"),
+        1024,
+        768);
     'main: loop {
         // loop over events
         for event in window.poll_events() {
