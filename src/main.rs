@@ -8,6 +8,11 @@ extern crate image;
 use gfx::Device;
 
 mod visualizer;
+mod level;
+mod common;
+mod pipeline;
+
+use pipeline::{ColorFormat, DepthFormat};
 
 fn main() {
     std::env::set_var("RUST_BACKTRACE", "1");
@@ -16,7 +21,7 @@ fn main() {
         .with_dimensions(1024, 768)
         .with_vsync();
     let (window, mut device, mut factory, main_color, main_depth) =
-        gfx_window_glutin::init::<visualizer::ColorFormat, visualizer::DepthFormat>(builder);
+        gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder);
     let mut encoder: gfx::Encoder<_, _> = factory.create_command_buffer().into();
     let mut visualizer = visualizer::Visualizer::new(
         factory, 
