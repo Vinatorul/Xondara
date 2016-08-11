@@ -33,7 +33,7 @@ impl<R> Level<R> where R: gfx::Resources {
         let tile_set_w = 32;
         let tile_set_h = 32;
         let width_ratio = 1.0/(client_width/tile_size) as f32;
-        let height_ratio = 1.0/(client_height/tile_size) as f32;    
+        let height_ratio = 1.0/(client_height/tile_size) as f32;
 
         let coef = 2.0;
         let mut vertex_data = Vec::<Vertex>::new();
