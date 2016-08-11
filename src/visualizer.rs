@@ -1,6 +1,5 @@
 use gfx;
 use gfx::traits::FactoryExt;
-use gfx::handle::ShaderResourceView;
 use level;
 use pipeline::{pipe, ColorFormat, DepthFormat};
 
