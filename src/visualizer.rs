@@ -27,15 +27,13 @@ impl<R, F> Visualizer<R, F> where R: gfx::Resources, F: gfx::Factory<R> {
             pipe::new()
         ).unwrap();
 
-        let level = level::Level::new(&mut factory);
-        let (vertex_data, index_data) = level.generate_mesh(client_width, client_height);
+        let level = level::Level::new();
+        let (vertex_data, index_data) = level.generate_mesh();
         let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
         
-        let sampler = factory.create_sampler_linear();
         let data = pipe::Data {
             vbuf: vertex_buffer,
             out: main_color,
-            texture: (level.texture, sampler),
         };
         Visualizer {
             pso: pso,
