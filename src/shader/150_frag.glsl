@@ -1,9 +1,8 @@
 #version 150 core
 
-uniform sampler2D t_Test;
-in vec2 v_Tc;
+in vec4 v_Color;
 out vec4 Target0;
 
 void main() {
-    Target0 = texture2D(t_Test, v_Tc);
+    Target0 = v_Color;
 }

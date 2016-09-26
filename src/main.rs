@@ -27,8 +27,8 @@ fn main() {
         factory, 
         main_color, 
         main_depth,
-        include_bytes!("shader/120_vert.glsl"),
-        include_bytes!("shader/120_frag.glsl"),
+        include_bytes!("shader/150_vert.glsl"),
+        include_bytes!("shader/150_frag.glsl"),
         1024,
         768);
     'main: loop {
