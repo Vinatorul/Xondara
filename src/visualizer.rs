@@ -3,7 +3,7 @@ use gfx::traits::FactoryExt;
 use level;
 use pipeline::{pipe, ColorFormat, DepthFormat};
 
-const CLEAR_COLOR: [f32; 4] = [0.1, 0.2, 0.3, 1.0];
+const CLEAR_COLOR: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
 pub struct Visualizer<R, F> where R: gfx::Resources, F: gfx::Factory<R> {
     pso: gfx::PipelineState<R, pipe::Meta>,
@@ -16,14 +16,18 @@ impl<R, F> Visualizer<R, F> where R: gfx::Resources, F: gfx::Factory<R> {
     pub fn new(mut factory: F, 
                main_color: gfx::handle::RenderTargetView<R, ColorFormat>,
                _main_depth: gfx::handle::DepthStencilView<R, DepthFormat>,
-               verex_shader: &'static [u8],
+               vertex_shader: &'static [u8],
                fragment_shader: &'static [u8],
                client_width: usize,
                client_height: usize) 
             -> Visualizer<R, F> {
-        let pso = factory.create_pipeline_simple(
-            verex_shader,
-            fragment_shader,
+        let program = factory.link_program(&vertex_shader, &fragment_shader).unwrap();
+        let mut rasterizer = gfx::state::Rasterizer::new_fill();
+        rasterizer.method = gfx::state::RasterMethod::Line(10);
+        let pso = factory.create_pipeline_from_program(
+            &program,
+            gfx::Primitive::LineList,
+            rasterizer,
             pipe::new()
         ).unwrap();
 

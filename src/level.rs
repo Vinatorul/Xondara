@@ -15,17 +15,11 @@ impl Level {
 
     pub fn generate_mesh(&self) -> (Vec<Vertex>, Vec<u32>) {
         let mut vertex_data = Vec::<Vertex>::new();
-        vertex_data.push(Vertex { pos: [ -1.0,  1.0 ], color: [1.0, 0.0, 0.0] });
-        vertex_data.push(Vertex { pos: [ -1.0, -1.0 ], color: [0.0, 0.0, 1.0] });  
-        vertex_data.push(Vertex { pos: [  1.0,  1.0 ], color: [0.0, 1.0, 0.0] });         
-        vertex_data.push(Vertex { pos: [  1.0, -1.0 ], color: [0.0, 0.0, 1.0] });
+        vertex_data.push(Vertex { pos: [ -0.5,  0.0 ], color: [1.0, 1.0, 0.0] });
+        vertex_data.push(Vertex { pos: [  0.5,  0.0 ], color: [1.0, 0.0, 0.0] });
         let mut index_data = Vec::<u32>::new();
         index_data.push(0);
         index_data.push(1);
-        index_data.push(2);
-        index_data.push(2);
-        index_data.push(1);
-        index_data.push(3);
         (vertex_data, index_data)
     }
 }
