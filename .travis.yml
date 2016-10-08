@@ -14,4 +14,7 @@ matrix:
  allow_failures:
    - rust: nightly
 script:
-    - cargo build
+  - |
+    export PATH=$PATH:~/.cargo/bin &&
+    cargo fmt -- --write-mode=diff &&
+    cargo build
