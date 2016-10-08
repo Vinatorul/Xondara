@@ -13,6 +13,7 @@ os:
 matrix:
  allow_failures:
    - rust: nightly
+before_script: (cargo install rustfmt || true)
 script:
   - |
     export PATH=$PATH:~/.cargo/bin &&
