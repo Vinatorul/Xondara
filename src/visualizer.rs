@@ -1,8 +1,9 @@
 use gfx;
 use gfx::traits::FactoryExt;
 use gfx::{Bundle, tex};
+use gfx::handle::{ShaderResourceView, RenderTargetView};
 use level;
-use pipeline::{scene, result, blur, ColorFormat, DepthFormat, PPVertex};
+use pipeline::{scene, result, blur, ColorFormat, HDRFormat, DepthFormat, PPVertex};
 
 const CLEAR_COLOR: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
@@ -10,13 +11,14 @@ pub struct Visualizer<R> where R: gfx::Resources {
     scene: Bundle<R, scene::Data<R>>,
     result: Bundle<R, result::Data<R>>,
     blur: Bundle<R, blur::Data<R>>,
-    hdr_buf1: gfx::handle::ShaderResourceView<R, [f32; 4]>,
-    hdr_buf2: gfx::handle::ShaderResourceView<R, [f32; 4]>,
+    source: gfx::handle::ShaderResourceView<R, [f32; 4]>,
+    pair1: ViewPair<R, HDRFormat>,
+    pair2: ViewPair<R, HDRFormat>,
 }
 
 struct ViewPair<R: gfx::Resources, T: gfx::format::Formatted> {
-    resource: gfx::handle::ShaderResourceView<R, T::View>,
-    target: gfx::handle::RenderTargetView<R, T>,
+    resource: ShaderResourceView<R, T::View>,
+    target: RenderTargetView<R, T>,
 }
 
 impl<R> Visualizer<R> where R: gfx::Resources {
@@ -41,6 +43,11 @@ impl<R> Visualizer<R> where R: gfx::Resources {
             ViewPair{ resource: srv, target: rtv }
         };
 
+        let hdr_tex3 = {
+            let (_ , srv, rtv) = factory.create_render_target(width, height).unwrap();
+            ViewPair{ resource: srv, target: rtv }
+        };
+
         let sampler = factory.create_sampler(
             tex::SamplerInfo::new(tex::FilterMethod::Scale,
                                        tex::WrapMode::Clamp)
@@ -52,7 +59,7 @@ impl<R> Visualizer<R> where R: gfx::Resources {
             let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
             let program = factory.link_program(&vertex_shader, &fragment_shader).unwrap();
             let mut rasterizer = gfx::state::Rasterizer::new_fill();
-            rasterizer.method = gfx::state::RasterMethod::Line(10);
+            rasterizer.method = gfx::state::RasterMethod::Line(5);
             let pso = factory.create_pipeline_from_program(
                 &program,
                 gfx::Primitive::LineList,
@@ -84,7 +91,7 @@ impl<R> Visualizer<R> where R: gfx::Resources {
             let data = result::Data {
                 vbuf: vertex_buffer,
                 scene: (hdr_tex1.resource.clone(), sampler.clone()),
-                blur: (hdr_tex2.resource.clone(), sampler.clone()),
+                blur: (hdr_tex3.resource.clone(), sampler.clone()),
                 out: main_color,
             };
             Bundle::new(slice, pso, data)
@@ -118,20 +125,33 @@ impl<R> Visualizer<R> where R: gfx::Resources {
             scene: scene,
             result: result,
             blur: blur,
-            hdr_buf1: hdr_tex1.resource.clone(),
-            hdr_buf2: hdr_tex2.resource.clone(),
+            source: hdr_tex1.resource.clone(),
+            pair1: hdr_tex2,
+            pair2: hdr_tex3,
         }
     }
 
     pub fn render<C>(&mut self, encoder: &mut gfx::Encoder<R, C>) where C: gfx::CommandBuffer<R> {
         encoder.clear(&self.scene.data.out, CLEAR_COLOR);
         self.scene.encode(encoder);
-        self.blur.data.tex.0 = self.hdr_buf1.clone();
+        self.blur.data.tex.0 = self.source.clone();
+        self.blur.data.out = self.pair1.target.clone();
         self.blur.data.direction = 0;
         self.blur.encode(encoder);
-        self.blur.data.tex.0 = self.hdr_buf2.clone();
+        self.blur.data.tex.0 = self.pair1.resource.clone();
+        self.blur.data.out = self.pair2.target.clone();
         self.blur.data.direction = 1;
         self.blur.encode(encoder);
+        for _i in 0..1 {
+            self.blur.data.tex.0 = self.pair2.resource.clone();
+            self.blur.data.out = self.pair1.target.clone();
+            self.blur.data.direction = 0;
+            self.blur.encode(encoder);
+            self.blur.data.tex.0 = self.pair1.resource.clone();
+            self.blur.data.out = self.pair2.target.clone();
+            self.blur.data.direction = 1;
+            self.blur.encode(encoder);
+        }
         self.result.encode(encoder);
     }
 }

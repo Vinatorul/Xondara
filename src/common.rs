@@ -5,7 +5,7 @@ use std::io::Cursor;
 use image;
 use pipeline::ColorFormat;
 
-pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> (ShaderResourceView<R, [f32; 4]>, f32, f32)
+pub fn _load_texture<R, F>(factory: &mut F, data: &[u8]) -> (ShaderResourceView<R, [f32; 4]>, f32, f32)
     where R: gfx::Resources, F: gfx::Factory<R>
 {
     let img = image::load(Cursor::new(data), image::PNG).unwrap().to_rgba();

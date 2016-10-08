@@ -1,7 +1,7 @@
 use pipeline::Vertex;
 
 pub struct Level {
-    level_info: Vec<i32>,
+    _level_info: Vec<i32>,
 }
 
 impl Level {
@@ -9,7 +9,7 @@ impl Level {
         let level_info = Vec::<i32>::new();
 
         Level {
-            level_info: level_info,
+            _level_info: level_info,
         }
     }
 
