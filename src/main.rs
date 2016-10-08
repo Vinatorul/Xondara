@@ -29,7 +29,8 @@ fn main() {
         main_depth,
         include_bytes!("shader/vert.glsl"),
         include_bytes!("shader/frag.glsl"),
-        include_bytes!("shader/res_vert.glsl"),
+        include_bytes!("shader/pp_vert.glsl"),
+        include_bytes!("shader/blur_frag.glsl"),
         include_bytes!("shader/res_frag.glsl"));
     'main: loop {
         // loop over events

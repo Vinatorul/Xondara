@@ -10,7 +10,7 @@ gfx_defines! {
         color: [f32; 3] = "a_Color",
     }
 
-    vertex ResultVertex {
+    vertex PPVertex {
         pos: [f32; 2] = "a_Pos",
         tex_coord: [f32; 2] = "a_TexCoord",
     }
@@ -21,8 +21,16 @@ gfx_defines! {
     }
 
     pipeline result {
-        vbuf: gfx::VertexBuffer<ResultVertex> = (),
-        tex: gfx::TextureSampler<[f32; 4]> = "t_BloomTex",
+        vbuf: gfx::VertexBuffer<PPVertex> = (),
+        scene: gfx::TextureSampler<[f32; 4]> = "t_SceneTex",
+        blur: gfx::TextureSampler<[f32; 4]> = "t_BloomTex",
         out: gfx::RenderTarget<ColorFormat> = "Target0",
+    }
+
+    pipeline blur {
+        vbuf: gfx::VertexBuffer<PPVertex> = (),
+        direction: gfx::Global<i32> = "i_direction",
+        tex: gfx::TextureSampler<[f32; 4]> = "t_Buffer",
+        out: gfx::RenderTarget<HDRFormat> = "Target0",
     }
 }

@@ -2,13 +2,16 @@ use gfx;
 use gfx::traits::FactoryExt;
 use gfx::{Bundle, tex};
 use level;
-use pipeline::{scene, result, ColorFormat, DepthFormat, ResultVertex};
+use pipeline::{scene, result, blur, ColorFormat, DepthFormat, PPVertex};
 
 const CLEAR_COLOR: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
 pub struct Visualizer<R> where R: gfx::Resources {
     scene: Bundle<R, scene::Data<R>>,
     result: Bundle<R, result::Data<R>>,
+    blur: Bundle<R, blur::Data<R>>,
+    hdr_buf1: gfx::handle::ShaderResourceView<R, [f32; 4]>,
+    hdr_buf2: gfx::handle::ShaderResourceView<R, [f32; 4]>,
 }
 
 struct ViewPair<R: gfx::Resources, T: gfx::format::Formatted> {
@@ -22,13 +25,18 @@ impl<R> Visualizer<R> where R: gfx::Resources {
                _main_depth: gfx::handle::DepthStencilView<R, DepthFormat>,
                vertex_shader: &'static [u8],
                fragment_shader: &'static [u8],
-               result_vertex_shader: &'static [u8],
+               pp_vertex_shader: &'static [u8],
+               blur_fragment_shader: &'static [u8],
                result_fragment_shader: &'static [u8])
             -> Visualizer<R> where F: gfx::Factory<R>
     {
 
         let (width, height, _, _) = main_color.get_dimensions();
-        let hdr_tex = {
+        let hdr_tex1 = {
+            let (_ , srv, rtv) = factory.create_render_target(width, height).unwrap();
+            ViewPair{ resource: srv, target: rtv }
+        };
+        let hdr_tex2 = {
             let (_ , srv, rtv) = factory.create_render_target(width, height).unwrap();
             ViewPair{ resource: srv, target: rtv }
         };
@@ -53,7 +61,7 @@ impl<R> Visualizer<R> where R: gfx::Resources {
             ).unwrap();
             let data = scene::Data {
                 vbuf: vertex_buffer,
-                out: hdr_tex.target.clone(),
+                out: hdr_tex1.target.clone(),
             };
 
             Bundle::new(slice, pso, data)
@@ -61,22 +69,46 @@ impl<R> Visualizer<R> where R: gfx::Resources {
         
         let result = {
             let vertex_data = [
-                ResultVertex { pos: [ -1.0,  1.0 ], tex_coord: [0.0, 0.0] },
-                ResultVertex { pos: [  1.0,  1.0 ], tex_coord: [1.0, 0.0] },
-                ResultVertex { pos: [ -1.0, -1.0 ], tex_coord: [0.0, 1.0] },
-                ResultVertex { pos: [  1.0, -1.0 ], tex_coord: [1.0, 1.0] },
+                PPVertex { pos: [ -1.0,  1.0 ], tex_coord: [0.0, 0.0] },
+                PPVertex { pos: [  1.0,  1.0 ], tex_coord: [1.0, 0.0] },
+                PPVertex { pos: [ -1.0, -1.0 ], tex_coord: [0.0, 1.0] },
+                PPVertex { pos: [  1.0, -1.0 ], tex_coord: [1.0, 1.0] },
             ];
             let index_data: Vec<u32> = vec![0, 1, 2, 1, 2, 3];
             let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
             let pso = factory.create_pipeline_simple(
-                result_vertex_shader,
+                pp_vertex_shader,
                 result_fragment_shader,
                 result::new()
                 ).unwrap();
             let data = result::Data {
                 vbuf: vertex_buffer,
-                tex: (hdr_tex.resource.clone(), sampler.clone()),
+                scene: (hdr_tex1.resource.clone(), sampler.clone()),
+                blur: (hdr_tex2.resource.clone(), sampler.clone()),
                 out: main_color,
+            };
+            Bundle::new(slice, pso, data)
+        };
+
+        let blur = {
+            let vertex_data = [
+                PPVertex { pos: [ -1.0,  1.0 ], tex_coord: [0.0, 0.0] },
+                PPVertex { pos: [  1.0,  1.0 ], tex_coord: [1.0, 0.0] },
+                PPVertex { pos: [ -1.0, -1.0 ], tex_coord: [0.0, 1.0] },
+                PPVertex { pos: [  1.0, -1.0 ], tex_coord: [1.0, 1.0] },
+            ];
+            let index_data: Vec<u32> = vec![0, 1, 2, 1, 2, 3];
+            let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
+            let pso = factory.create_pipeline_simple(
+                pp_vertex_shader,
+                blur_fragment_shader,
+                blur::new()
+                ).unwrap();
+            let data = blur::Data {
+                vbuf: vertex_buffer,
+                direction: 0,
+                tex: (hdr_tex1.resource.clone(), sampler.clone()),
+                out: hdr_tex2.target.clone(),
             };
             Bundle::new(slice, pso, data)
         };
@@ -85,12 +117,21 @@ impl<R> Visualizer<R> where R: gfx::Resources {
         Visualizer {
             scene: scene,
             result: result,
+            blur: blur,
+            hdr_buf1: hdr_tex1.resource.clone(),
+            hdr_buf2: hdr_tex2.resource.clone(),
         }
     }
 
     pub fn render<C>(&mut self, encoder: &mut gfx::Encoder<R, C>) where C: gfx::CommandBuffer<R> {
         encoder.clear(&self.scene.data.out, CLEAR_COLOR);
         self.scene.encode(encoder);
+        self.blur.data.tex.0 = self.hdr_buf1.clone();
+        self.blur.data.direction = 0;
+        self.blur.encode(encoder);
+        self.blur.data.tex.0 = self.hdr_buf2.clone();
+        self.blur.data.direction = 1;
+        self.blur.encode(encoder);
         self.result.encode(encoder);
     }
 }
