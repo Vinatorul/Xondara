@@ -26,12 +26,7 @@ fn main() {
     let mut visualizer = visualizer::Visualizer::new(
         factory, 
         main_color, 
-        main_depth,
-        include_bytes!("shader/vert.glsl"),
-        include_bytes!("shader/frag.glsl"),
-        include_bytes!("shader/pp_vert.glsl"),
-        include_bytes!("shader/blur_frag.glsl"),
-        include_bytes!("shader/res_frag.glsl"));
+        main_depth);
     'main: loop {
         // loop over events
         for event in window.poll_events() {

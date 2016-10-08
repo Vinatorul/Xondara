@@ -14,3 +14,28 @@ pub fn _load_texture<R, F>(factory: &mut F, data: &[u8]) -> (ShaderResourceView<
     let (_, view) = factory.create_texture_const_u8::<ColorFormat>(kind, &[&img]).unwrap();
     (view, width as f32, height as f32)
 }
+
+#[inline]
+pub fn vertex_shader() -> &'static [u8] {
+    include_bytes!("shader/vert.glsl")
+}
+
+#[inline]
+pub fn fragment_shader() -> &'static [u8] {
+    include_bytes!("shader/frag.glsl")
+}
+
+#[inline]
+pub fn pp_vertex_shader() -> &'static [u8] {
+    include_bytes!("shader/pp_vert.glsl")
+}
+
+#[inline]
+pub fn blur_fragment_shader() -> &'static [u8] {
+    include_bytes!("shader/blur_frag.glsl")
+}
+
+#[inline]
+pub fn result_fragment_shader() -> &'static [u8] {
+    include_bytes!("shader/res_frag.glsl")
+}

@@ -3,6 +3,7 @@ use gfx::traits::FactoryExt;
 use gfx::{Bundle, tex};
 use gfx::handle::{ShaderResourceView, RenderTargetView};
 use level;
+use common::*;
 use pipeline::{scene, result, blur, ColorFormat, HDRFormat, DepthFormat, PPVertex};
 
 const CLEAR_COLOR: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
@@ -24,12 +25,7 @@ struct ViewPair<R: gfx::Resources, T: gfx::format::Formatted> {
 impl<R> Visualizer<R> where R: gfx::Resources {
     pub fn new<F>(mut factory: F, 
                main_color: gfx::handle::RenderTargetView<R, ColorFormat>,
-               _main_depth: gfx::handle::DepthStencilView<R, DepthFormat>,
-               vertex_shader: &'static [u8],
-               fragment_shader: &'static [u8],
-               pp_vertex_shader: &'static [u8],
-               blur_fragment_shader: &'static [u8],
-               result_fragment_shader: &'static [u8])
+               _main_depth: gfx::handle::DepthStencilView<R, DepthFormat>)
             -> Visualizer<R> where F: gfx::Factory<R>
     {
 
@@ -57,7 +53,7 @@ impl<R> Visualizer<R> where R: gfx::Resources {
             let level = level::Level::new();
             let (vertex_data, index_data) = level.generate_mesh();
             let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
-            let program = factory.link_program(&vertex_shader, &fragment_shader).unwrap();
+            let program = factory.link_program(vertex_shader(), fragment_shader()).unwrap();
             let mut rasterizer = gfx::state::Rasterizer::new_fill();
             rasterizer.method = gfx::state::RasterMethod::Line(5);
             let pso = factory.create_pipeline_from_program(
@@ -84,8 +80,8 @@ impl<R> Visualizer<R> where R: gfx::Resources {
             let index_data: Vec<u32> = vec![0, 1, 2, 1, 2, 3];
             let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
             let pso = factory.create_pipeline_simple(
-                pp_vertex_shader,
-                result_fragment_shader,
+                pp_vertex_shader(),
+                result_fragment_shader(),
                 result::new()
                 ).unwrap();
             let data = result::Data {
@@ -107,8 +103,8 @@ impl<R> Visualizer<R> where R: gfx::Resources {
             let index_data: Vec<u32> = vec![0, 1, 2, 1, 2, 3];
             let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
             let pso = factory.create_pipeline_simple(
-                pp_vertex_shader,
-                blur_fragment_shader,
+                pp_vertex_shader(),
+                blur_fragment_shader(),
                 blur::new()
                 ).unwrap();
             let data = blur::Data {
