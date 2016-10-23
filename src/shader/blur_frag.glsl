@@ -20,15 +20,15 @@ float weight[11] = float[](
  );
 
 void main() {
-    vec4 temp = texture2D(t_Buffer, v_TexCoord)*weight[0];
+    vec4 temp = texture(t_Buffer, v_TexCoord)*weight[0];
     for (int i=1; i<8; i++) {
         vec2 v_offset;
         if (i_direction == 0)
             v_offset = vec2(0.0, float(i))/768.0;
         else
             v_offset = vec2(float(i), 0.0)/1024.0;
-        temp += texture2D(t_Buffer, (v_TexCoord + v_offset)) * weight[i];
-        temp += texture2D(t_Buffer, (v_TexCoord - v_offset)) * weight[i];
+        temp += texture(t_Buffer, (v_TexCoord + v_offset)) * weight[i];
+        temp += texture(t_Buffer, (v_TexCoord - v_offset)) * weight[i];
     }
 
     Target0 = temp;
